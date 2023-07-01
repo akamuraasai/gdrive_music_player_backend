@@ -3,3 +3,4 @@ node_modules/
 .vscode/
 credentials.json
 token.json
+.env

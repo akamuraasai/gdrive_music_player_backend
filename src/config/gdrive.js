@@ -3,6 +3,8 @@ const path = require('path');
 const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
+const dotenv = require('dotenv');
+dotenv.config();
 
 // If modifying these scopes, delete token.json.
 // const SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
@@ -22,9 +24,14 @@ const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
  *
  * @return {Promise<OAuth2Client|null>}
  */
-async function loadSavedCredentialsIfExist() {
+async function loadSavedCredentialsIfExist(fromEnv = false) {
   try {
-    const content = await fs.readFile(TOKEN_PATH);
+    let content;
+    if (fromEnv) {
+      content = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    } else {
+      content = await fs.readFile(TOKEN_PATH);
+    }
     const credentials = JSON.parse(content);
     return google.auth.fromJSON(credentials);
   } catch (err) {
@@ -56,7 +63,9 @@ async function saveCredentials(client) {
  *
  */
 async function authorize() {
-  let client = await loadSavedCredentialsIfExist();
+  const fromEnv = !!process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  console.log({ fromEnv });
+  let client = await loadSavedCredentialsIfExist(fromEnv);
   if (client) {
     return client;
   }
