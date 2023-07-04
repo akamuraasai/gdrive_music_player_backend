@@ -34,9 +34,9 @@ module.exports = (app) => {
     const items = files.map(({ name, webContentLink, appProperties, id }) => musicItem({
       id,
       title: name,
-      subtitle: appProperties.artist,
+      subtitle: appProperties?.artist || 'Unknown',
       uri: webContentLink,
-      image: appProperties.thumbnail,
+      image: appProperties?.thumbnail || 'https://www.wmhbradio.org/wp-content/uploads/2016/07/music-placeholder.png',
     }));
     return res.send([...items, ...world]);
   });
